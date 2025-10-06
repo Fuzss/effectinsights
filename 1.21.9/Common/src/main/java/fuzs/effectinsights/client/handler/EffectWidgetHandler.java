@@ -45,7 +45,7 @@ public class EffectWidgetHandler {
         return EventResult.PASS;
     }
 
-    public static void onDrawForeground(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+    public static void onAfterBackground(AbstractContainerScreen<?> screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         if (!EffectInsights.CONFIG.get(ClientConfig.class).effectWidgetTooltips.widgetTooltips()) {
             return;
         }
