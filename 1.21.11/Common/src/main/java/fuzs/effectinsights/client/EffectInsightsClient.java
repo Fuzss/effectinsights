@@ -1,16 +1,11 @@
 package fuzs.effectinsights.client;
 
 import fuzs.effectinsights.client.handler.EffectTooltipHandler;
-import fuzs.effectinsights.client.handler.EffectWidgetHandler;
 import fuzs.effectinsights.client.handler.FoodTooltipHandler;
 import fuzs.puzzleslib.api.client.core.v1.ClientModConstructor;
-import fuzs.puzzleslib.api.client.event.v1.gui.GatherEffectScreenTooltipCallback;
 import fuzs.puzzleslib.api.client.event.v1.gui.ItemTooltipCallback;
-import fuzs.puzzleslib.api.client.event.v1.gui.PrepareInventoryMobEffectsCallback;
-import fuzs.puzzleslib.api.client.event.v1.gui.ScreenEvents;
 import fuzs.puzzleslib.api.event.v1.core.EventPhase;
 import fuzs.tooltipinsights.api.v1.client.handler.TooltipDescriptionsHandler;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffect;
@@ -25,9 +20,6 @@ public class EffectInsightsClient implements ClientModConstructor {
     private static void registerEventHandlers() {
         ItemTooltipCallback.EVENT.register(EventPhase.LAST, EffectTooltipHandler.INSTANCE::onItemTooltip);
         ItemTooltipCallback.EVENT.register(EventPhase.AFTER, FoodTooltipHandler::onItemTooltip);
-        PrepareInventoryMobEffectsCallback.EVENT.register(EventPhase.LAST, EffectWidgetHandler::onInventoryMobEffects);
-        ScreenEvents.afterBackground(AbstractContainerScreen.class).register(EffectWidgetHandler::onAfterBackground);
-        GatherEffectScreenTooltipCallback.EVENT.register(EffectWidgetHandler::onGatherEffectScreenTooltip);
     }
 
     @Override
