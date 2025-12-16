@@ -22,6 +22,9 @@ public class ModLanguageProvider extends AbstractLanguageProvider {
                 "desc",
                 "Triggers ominous events in villages and trial chambers.");
         translationBuilder.add(MobEffects.BLINDNESS.value(), "desc", "Impairs vision and disables sprinting.");
+        translationBuilder.add(MobEffects.BREATH_OF_THE_NAUTILUS.value(),
+                "desc",
+                "Prevents oxygen depletion underwater.");
         translationBuilder.add(MobEffects.CONDUIT_POWER.value(), "desc", "Enhances underwater capabilities.");
         translationBuilder.add(MobEffects.DARKNESS.value(), "desc", "Creates pulsating darkness effect.");
         translationBuilder.add(MobEffects.DOLPHINS_GRACE.value(), "desc", "Enhances swimming speed.");
