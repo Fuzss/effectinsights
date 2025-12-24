@@ -8,9 +8,3 @@ dependencies {
     modApi(libs.tooltipinsights.fabric)
     include(libs.tooltipinsights.fabric)
 }
-
-multiloader {
-    mixins {
-        clientMixin("EffectsInInventoryFabricMixin")
-    }
-}

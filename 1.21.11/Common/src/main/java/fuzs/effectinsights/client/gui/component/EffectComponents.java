@@ -10,12 +10,15 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.item.component.DeathProtection;
 import net.minecraft.world.item.component.OminousBottleAmplifier;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.consume_effects.ConsumeEffect;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -24,7 +27,7 @@ public final class EffectComponents {
             DataComponents.POTION_CONTENTS) {
         @Override
         protected boolean isEnabled() {
-            return EffectInsights.CONFIG.get(ClientConfig.class).effectItemTooltips.itemDescriptionTargets.potionContents;
+            return EffectInsights.CONFIG.get(ClientConfig.class).effectItemTooltips.itemDescriptionTargets.potion;
         }
 
         @Override
@@ -43,9 +46,30 @@ public final class EffectComponents {
         protected Stream<MobEffectInstance> extractFromComponent(Consumable consumable) {
             return consumable.onConsumeEffects()
                     .stream()
-                    .filter(ApplyStatusEffectsConsumeEffect.class::isInstance)
-                    .map(ApplyStatusEffectsConsumeEffect.class::cast)
-                    .map(ApplyStatusEffectsConsumeEffect::effects)
+                    .mapMulti((ConsumeEffect consumeEffect, Consumer<List<MobEffectInstance>> mobEffectsConsumer) -> {
+                        if (consumeEffect instanceof ApplyStatusEffectsConsumeEffect applyStatusEffectsConsumeEffect) {
+                            mobEffectsConsumer.accept(applyStatusEffectsConsumeEffect.effects());
+                        }
+                    })
+                    .flatMap(Collection::stream);
+        }
+    };
+    static final TooltipComponentExtractor<MobEffectInstance, DeathProtection> DEATH_PROTECTION = new TooltipComponentExtractor<>(
+            DataComponents.DEATH_PROTECTION) {
+        @Override
+        protected boolean isEnabled() {
+            return EffectInsights.CONFIG.get(ClientConfig.class).effectItemTooltips.itemDescriptionTargets.totemOfUndying;
+        }
+
+        @Override
+        protected Stream<MobEffectInstance> extractFromComponent(DeathProtection consumable) {
+            return consumable.deathEffects()
+                    .stream()
+                    .mapMulti((ConsumeEffect consumeEffect, Consumer<List<MobEffectInstance>> mobEffectsConsumer) -> {
+                        if (consumeEffect instanceof ApplyStatusEffectsConsumeEffect applyStatusEffectsConsumeEffect) {
+                            mobEffectsConsumer.accept(applyStatusEffectsConsumeEffect.effects());
+                        }
+                    })
                     .flatMap(Collection::stream);
         }
     };
@@ -82,6 +106,7 @@ public final class EffectComponents {
     private static final List<TooltipComponentExtractor<MobEffectInstance, ?>> MOB_EFFECTS_SUPPLIERS = ImmutableList.of(
             SUSPICIOUS_STEW_EFFECTS,
             OMINOUS_BOTTLE_AMPLIFIER,
+            DEATH_PROTECTION,
             CONSUMABLE,
             POTION_CONTENTS);
 

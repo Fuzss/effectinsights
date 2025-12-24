@@ -30,40 +30,54 @@ import java.util.stream.Collectors;
 public class FoodTooltipHandler {
 
     public static void onItemTooltip(ItemStack itemStack, List<Component> tooltipLines, Item.TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
-        if (!EffectInsights.CONFIG.get(ClientConfig.class).effectItemTooltips.foodEffectTooltips) {
+        if (!EffectInsights.CONFIG.get(ClientConfig.class).effectItemTooltips.consumablesEffectTooltips) {
             return;
         }
 
-        if (itemStack.has(DataComponents.CONSUMABLE)) {
-            List<ApplyStatusEffectsConsumeEffect> consumeEffects = new ArrayList<>();
-
-            for (ConsumeEffect consumeEffect : itemStack.get(DataComponents.CONSUMABLE).onConsumeEffects()) {
-                if (consumeEffect instanceof ApplyStatusEffectsConsumeEffect applyStatusEffectsConsumeEffect) {
-                    consumeEffects.add(applyStatusEffectsConsumeEffect);
-                }
-            }
-
-            if (!consumeEffects.isEmpty()) {
-                // collect all possible effect description ids, to guard against other mods
-                // maybe already adding their potion effects to food tooltips (like Farmer's Delight)
-                Set<String> translationKeys = getAllTranslationKeys(tooltipLines);
-                List<Component> potionLines = new ArrayList<>();
-                List<Component> attributeLines = new ArrayList<>();
-                for (ApplyStatusEffectsConsumeEffect consumeEffect : consumeEffects) {
-                    for (MobEffectInstance mobEffectInstance : consumeEffect.effects()) {
-                        if (!translationKeys.contains(mobEffectInstance.getDescriptionId())) {
-                            collectPotionTooltipLines(mobEffectInstance,
+        List<ConsumeEffect> consumeEffects = collectConsumeEffects(itemStack);
+        if (!consumeEffects.isEmpty()) {
+            // Collect all possible effect description ids.
+            // This is used to guard against other mods maybe already adding their potion effects to food tooltips,
+            Set<String> translationKeys = getAllTranslationKeys(tooltipLines);
+            List<Component> potionLines = new ArrayList<>();
+            List<Component> attributeLines = new ArrayList<>();
+            for (ConsumeEffect consumeEffect : consumeEffects) {
+                if (consumeEffect instanceof ApplyStatusEffectsConsumeEffect(
+                        List<MobEffectInstance> effects, float probability
+                )) {
+                    for (MobEffectInstance mobEffect : effects) {
+                        if (!translationKeys.contains(mobEffect.getDescriptionId())) {
+                            collectPotionTooltipLines(mobEffect,
                                     tooltipContext.tickRate(),
-                                    consumeEffect.probability(),
+                                    probability,
                                     potionLines,
                                     attributeLines);
                         }
                     }
                 }
+            }
 
+            if (!potionLines.isEmpty() || !attributeLines.isEmpty()) {
                 addPotionTooltipLines(tooltipLines, potionLines, attributeLines);
             }
         }
+    }
+
+    private static List<ConsumeEffect> collectConsumeEffects(ItemStack itemStack) {
+        if (!itemStack.has(DataComponents.CONSUMABLE) && !itemStack.has(DataComponents.DEATH_PROTECTION)) {
+            return Collections.emptyList();
+        }
+
+        List<ConsumeEffect> consumeEffects = new ArrayList<>();
+        if (itemStack.has(DataComponents.CONSUMABLE)) {
+            consumeEffects.addAll(itemStack.get(DataComponents.CONSUMABLE).onConsumeEffects());
+        }
+
+        if (itemStack.has(DataComponents.DEATH_PROTECTION)) {
+            consumeEffects.addAll(itemStack.get(DataComponents.DEATH_PROTECTION).deathEffects());
+        }
+
+        return consumeEffects;
     }
 
     private static Set<String> getAllTranslationKeys(List<Component> tooltipLines) {
@@ -82,9 +96,9 @@ public class FoodTooltipHandler {
         PotionContents.addPotionTooltip(Collections.singleton(mobEffectInstance), potionTooltip::add, 1.0F, tickRate);
         if (!potionTooltip.isEmpty()) {
             if (probability != 1.0F) {
-                String s = Mth.floor(probability * 100.0F) + "%";
+                String probabilityString = Mth.floor(probability * 100.0F) + "%";
                 potionTooltip.set(0,
-                        Component.translatable("potion.withDuration", potionTooltip.getFirst(), s)
+                        Component.translatable("potion.withDuration", potionTooltip.getFirst(), probabilityString)
                                 .withStyle(ChatFormatting.GOLD));
             }
 
@@ -101,7 +115,6 @@ public class FoodTooltipHandler {
     private static void addPotionTooltipLines(List<Component> tooltipLines, List<Component> potionLines, List<Component> attributeLines) {
         if (tooltipLines.isEmpty()) {
             tooltipLines.addAll(potionLines);
-
             if (!attributeLines.isEmpty()) {
                 tooltipLines.add(CommonComponents.EMPTY);
                 tooltipLines.addAll(attributeLines);
