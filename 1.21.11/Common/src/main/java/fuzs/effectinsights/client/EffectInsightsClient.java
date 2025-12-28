@@ -30,7 +30,8 @@ public class EffectInsightsClient implements ClientModConstructor {
         ItemTooltipCallback.EVENT.register(EventPhase.LAST, EffectTooltipHandler.INSTANCE::onItemTooltip);
         ItemTooltipCallback.EVENT.register(EventPhase.AFTER, FoodTooltipHandler::onItemTooltip);
         GatherEffectScreenTooltipCallback.EVENT.register((AbstractContainerScreen<?> screen, MobEffectInstance mobEffect, List<Component> tooltipLines) -> {
-            if (EffectInsights.CONFIG.get(ClientConfig.class).effectWidgetTooltips.widgetTooltips) {
+            // TODO add a disabled option, which is then split from not being active to prevent vanilla
+            if (EffectInsights.CONFIG.get(ClientConfig.class).effectWidgetTooltips.itemDescriptions.isActive()) {
                 tooltipLines.clear();
                 tooltipLines.addAll(MobEffectTooltipLines.getMobEffectWidgetTooltipLines(mobEffect));
             }

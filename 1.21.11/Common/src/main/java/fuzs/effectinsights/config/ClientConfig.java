@@ -9,10 +9,10 @@ public class ClientConfig extends AbstractClientConfig {
     public final EffectWidgetTooltips effectWidgetTooltips = new EffectWidgetTooltips();
     @Config
     public final EffectItemTooltips effectItemTooltips = new EffectItemTooltips();
+    @Config
+    public final EffectWidgetTooltips effectBeaconTooltips = new EffectWidgetTooltips();
 
-    public static class EffectWidgetTooltips extends StyledTooltips {
-        @Config(description = "Add rich tooltips including effect descriptions to effect widgets in inventory screens.")
-        public boolean widgetTooltips = true;
+    public static class EffectWidgetTooltips extends ItemTooltips {
         @Config
         public final EffectTooltipComponents widgetTooltipLines = new EffectTooltipComponents();
     }

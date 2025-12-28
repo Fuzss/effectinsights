@@ -94,4 +94,12 @@ public final class MobEffectTooltipLines {
                 mobEffect,
                 EffectInsights.CONFIG.get(ClientConfig.class).effectWidgetTooltips.widgetTooltipLines);
     }
+
+    public static List<Component> getBeaconTooltipLines(MobEffectInstance mobEffect) {
+        return TooltipLinesExtractor.getTooltipLines(WIDGET_SUPPLIERS,
+                EffectInsights.CONFIG.get(ClientConfig.class).effectBeaconTooltips.decorationComponent,
+                EffectInsights.CONFIG.get(ClientConfig.class).effectBeaconTooltips.decorationStyle,
+                mobEffect,
+                EffectInsights.CONFIG.get(ClientConfig.class).effectBeaconTooltips.widgetTooltipLines);
+    }
 }

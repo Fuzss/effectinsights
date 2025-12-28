@@ -17,6 +17,7 @@ abstract class EffectsInInventoryNeoForgeMixin {
                                               target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;III)V")))
     private boolean renderText(boolean mustClipText) {
         // This makes the tooltip always render, so we can then modify it via the NeoForge event.
-        return mustClipText || EffectInsights.CONFIG.get(ClientConfig.class).effectWidgetTooltips.widgetTooltips;
+        return mustClipText
+                || EffectInsights.CONFIG.get(ClientConfig.class).effectWidgetTooltips.itemDescriptions.isActive();
     }
 }

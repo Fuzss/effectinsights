@@ -34,7 +34,7 @@ public final class EffectTooltipHandler extends TooltipDescriptionsHandler<MobEf
         return EffectComponents.getAllMobEffects(itemStack)
                 .collect(Collectors.toMap(MobEffectInstance::getDescriptionId,
                         Function.identity(),
-                        (MobEffectInstance o1, MobEffectInstance o2) -> o1));
+                        (MobEffectInstance o1, MobEffectInstance o2) -> o2));
     }
 
     @Override

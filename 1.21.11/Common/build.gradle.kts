@@ -6,3 +6,9 @@ dependencies {
     modCompileOnlyApi(libs.puzzleslib.common)
     modCompileOnlyApi(libs.tooltipinsights.common)
 }
+
+multiloader {
+    mixins {
+        clientMixin("BeaconScreen\$BeaconPowerButtonMixin")
+    }
+}
