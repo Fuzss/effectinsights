@@ -9,9 +9,3 @@ dependencies {
     modApi(libs.tooltipinsights.neoforge)
     include(libs.tooltipinsights.neoforge)
 }
-
-multiloader {
-    mixins {
-        clientMixin("EffectsInInventoryNeoForgeMixin")
-    }
-}
